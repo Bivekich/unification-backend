@@ -1,0 +1,93 @@
+### Добавить юридическое лицо
+POST http://localhost:3000/api/admin/company
+Content-Type: application/json
+
+{
+  "name": "Касса",
+  "banks": [
+    { "name": "Касса", "balance": 892000 }
+  ]
+}
+
+###
+
+### Добавить банк к юридическому лицу
+POST http://localhost:3000/api/admin/company/bank
+Content-Type: application/json
+
+{
+  "companyName": "Company A",
+  "bankName": "Bank C",
+  "balance": 20000
+}
+
+###
+
+### Обновить баланс банка для юридического лица
+PUT http://localhost:3000/api/admin/company/bank
+Content-Type: application/json
+
+{
+  "companyName": "Company A",
+  "bankName": "Bank A",
+  "newBalance": 120000
+}
+
+###
+
+### Добавить пользователя
+POST http://localhost:3000/api/admin/user
+Content-Type: application/json
+
+{
+  "username": "Andrey",
+  "password": "0002",
+  "role": "user"
+}
+
+### Вход пользователя
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "Max",
+  "password": "1337"
+}
+
+### Получение информации о финансах
+GET http://localhost:3000/api/finances
+Content-Type: application/json
+
+### Получение информации о финансах
+GET http://localhost:3000/api/transfers/recent
+Content-Type: application/json
+
+### Внутренний перевод
+POST http://localhost:3000/api/transfers/internal
+Content-Type: application/json
+
+{
+  "fromCompany": "ООО «Виктория»",
+  "toCompany": "ООО «Пример»",
+  "amount": 500
+}
+
+### Вывод в наличку
+POST http://localhost:3000/api/transfers/cash
+Content-Type: application/json
+
+{
+  "fromCompany": "ООО «Виктория»",
+  "amount": 200
+}
+
+### Произвольный платеж
+POST http://localhost:3000/api/transfers/custom
+Content-Type: application/json
+
+{
+  "fromCompany": "ООО «Виктория»",
+  "toCompany": "ООО «Другой пример»",
+  "amount": 1000,
+  "description": "Произвольный платеж для тестирования"
+}
