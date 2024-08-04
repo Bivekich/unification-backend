@@ -6,6 +6,7 @@ import authRoutes from './routes/auth';
 import financeRoutes from './routes/finance';
 import transfersRoutes from './routes/transfers';
 import adminRoutes from './routes/admin';
+import cashRoutes from './routes/cash';
 
 const app = express();
 app.use(express.json());
@@ -19,6 +20,7 @@ mongoose
 app.use('/api/auth', authRoutes);
 app.use('/api/finances', financeRoutes);
 app.use('/api/transfers', transfersRoutes);
+app.use('/api/cash', cashRoutes);
 app.use('/api/admin', adminRoutes);
 
 const port = 3000;

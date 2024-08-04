@@ -2,6 +2,8 @@ import express from 'express';
 import moment from 'moment';
 import Company from '../models/company';
 import Transaction from '../models/transaction';
+import Cash from '../models/cash';
+import Balance from '../models/balance';
 
 const router = express.Router();
 
@@ -64,13 +66,13 @@ router.post('/internal', async (req, res) => {
 
 // Cash Withdrawals (from a specific bank to cash account)
 router.post('/cash', async (req, res) => {
-  const { fromCompany, fromBankName, amount } = req.body;
+  const { fromCompany, fromBankName, amount, description } = req.body;
 
   try {
     const company = await Company.findOne({ name: fromCompany }).exec();
-    const cash = await Company.findOne({ name: 'Касса' }).exec();
+    const balance = await Balance.findOne({}).exec(); // Получаем текущий баланс кассы
 
-    if (!company || !cash) {
+    if (!company || !balance) {
       return res
         .status(404)
         .json({ message: 'Company or cash account not found' });
@@ -87,27 +89,31 @@ router.post('/cash', async (req, res) => {
     }
 
     fromBank.balance = Number(fromBank.balance);
-    const cashBank = cash.banks.find((bank) => bank.name === 'Касса');
-    if (!cashBank) {
-      return res.status(404).json({ message: 'Cash bank not found' });
-    }
-    cashBank.balance = Number(cashBank.balance);
+    const currentCashBalance = balance.balance; // Получаем текущий баланс кассы
 
     if (fromBank.balance < withdrawalAmount) {
       return res.status(400).json({ message: 'Insufficient funds' });
     }
 
     fromBank.balance -= withdrawalAmount;
-    cashBank.balance += withdrawalAmount;
+    balance.balance += withdrawalAmount; // Обновляем баланс кассы
 
     await company.save();
-    await cash.save();
+    await balance.save();
+
+    // Создаем запись о кассовой операции
+    await Cash.create({
+      amount: withdrawalAmount,
+      type: 'income', // Вывод наличных считается доходом для кассы
+      description,
+      date: new Date(),
+    });
 
     await Transaction.create({
       fromCompany: company.name,
       toCompany: 'Касса',
       fromBank: fromBank.name,
-      toBank: cashBank.name,
+      toBank: 'Касса',
       amount: withdrawalAmount,
       type: 'cash',
     });
@@ -161,7 +167,7 @@ router.post('/custom', async (req, res) => {
       fromCompany: fromCompanyDoc.name,
       toCompany,
       fromBank: fromBank.name,
-      toBank: toBankName, 
+      toBank: toBankName,
       amount: transferAmount,
       type: 'custom',
       description,
