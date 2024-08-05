@@ -1,25 +1,29 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document } from "mongoose";
 
 interface Transaction extends Document {
-  fromCompany: string;
+  fromCompany?: string;
   fromBank?: string;
-  toCompany: string;
+  toCompany?: string;
   toBank?: string;
   amount: number;
-  type: 'internal' | 'cash' | 'custom';
+  type: "internal" | "cash" | "custom" | "replenish";
   date: Date;
   description?: string;
 }
 
 const transactionSchema = new Schema<Transaction>({
-  fromCompany: { type: String, required: true },
+  fromCompany: { type: String },
   fromBank: { type: String },
-  toCompany: { type: String, required: true },
+  toCompany: { type: String },
   toBank: { type: String },
-  amount: { type: Number, required: true },
-  type: { type: String, enum: ['internal', 'cash', 'custom'], required: true },
+  amount: { type: Number, rquired: true },
+  type: {
+    type: String,
+    enum: ["internal", "cash", "custom", "replenish"],
+    required: true,
+  },
   date: { type: Date, default: Date.now },
   description: { type: String },
 });
 
-export default model<Transaction>('Transaction', transactionSchema);
+export default model<Transaction>("Transaction", transactionSchema);
