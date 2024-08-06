@@ -9,6 +9,7 @@ interface Transaction extends Document {
   type: "internal" | "cash" | "custom" | "replenish";
   date: Date;
   description?: string;
+  author: string;
 }
 
 const transactionSchema = new Schema<Transaction>({
@@ -24,6 +25,7 @@ const transactionSchema = new Schema<Transaction>({
   },
   date: { type: Date, default: Date.now },
   description: { type: String },
+  author: { type: String, rquired: true },
 });
 
 export default model<Transaction>("Transaction", transactionSchema);

@@ -1,10 +1,13 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema } from "mongoose";
 
 interface ICash extends Document {
   amount: number;
-  type: 'expense' | 'income';
+  type: "expense" | "income";
   description: string;
   date: Date;
+  author?: string;
+  company?: string;
+  bank?: string;
 }
 
 const CashSchema: Schema = new Schema({
@@ -14,7 +17,7 @@ const CashSchema: Schema = new Schema({
   },
   type: {
     type: String,
-    enum: ['expense', 'income'],
+    enum: ["expense", "income"],
     required: true,
   },
   description: {
@@ -24,6 +27,15 @@ const CashSchema: Schema = new Schema({
     type: Date,
     default: Date.now,
   },
+  author: {
+    type: String,
+  },
+  company: {
+    type: String,
+  },
+  bank: {
+    type: String,
+  },
 });
 
-export default mongoose.model<ICash>('Cash', CashSchema);
+export default mongoose.model<ICash>("Cash", CashSchema);

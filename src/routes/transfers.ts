@@ -9,7 +9,8 @@ const router = express.Router();
 
 // Internal Transfers (between different companies)
 router.post("/internal", async (req, res) => {
-  const { fromCompany, fromBankName, toCompany, toBankName, amount } = req.body;
+  const { fromCompany, fromBankName, toCompany, toBankName, amount, author } =
+    req.body;
 
   try {
     const transferAmount = Number(amount);
@@ -55,6 +56,7 @@ router.post("/internal", async (req, res) => {
       toBank: toBank.name,
       amount: transferAmount,
       type: "internal",
+      author,
     });
 
     res.json({ message: "Internal transfer successful" });
@@ -66,7 +68,7 @@ router.post("/internal", async (req, res) => {
 
 // Cash Withdrawals (from a specific bank to cash account)
 router.post("/cash", async (req, res) => {
-  const { fromCompany, fromBankName, amount, description } = req.body;
+  const { fromCompany, fromBankName, amount, description, author } = req.body;
 
   try {
     const company = await Company.findOne({ name: fromCompany }).exec();
@@ -115,6 +117,7 @@ router.post("/cash", async (req, res) => {
       toBank: "Касса",
       amount: withdrawalAmount,
       type: "cash",
+      author,
     });
 
     res.json({ message: "Cash withdrawal successful" });
@@ -133,6 +136,7 @@ router.post("/custom", async (req, res) => {
     toBankName,
     amount,
     description,
+    author,
   } = req.body;
 
   try {
@@ -170,6 +174,7 @@ router.post("/custom", async (req, res) => {
       amount: transferAmount,
       type: "custom",
       description,
+      author,
     });
 
     res.json({ message: "Custom transfer successful" });
@@ -187,6 +192,7 @@ router.post("/replenish", async (req, res) => {
     toBankName,
     amount,
     description,
+    author,
   } = req.body;
 
   try {
@@ -218,6 +224,7 @@ router.post("/replenish", async (req, res) => {
       type: "replenish",
       description,
       date: new Date(),
+      author,
     });
 
     res.json({ message: "Company replenishment successful" });
